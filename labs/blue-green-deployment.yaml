@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: web-lab
+  labels:
+    app: web
+    env: lab
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-blue
+  namespace: web-lab
+  labels:
+    app: web
+    version: blue
+    env: lab
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: web
+        version: blue
+        env: lab
+    spec:
+      containers:
+        - name: web
+          image: cloudbarbosa/cloudiq:blue
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+      imagePullSecrets:
+        - name: minhasecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-blue-svc
+  namespace: web-lab
+  labels:
+    app: web
+    version: blue
+    env: lab
+spec:
+  selector:
+    app: web
+    version: blue
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-green
+  namespace: web-lab
+  labels:
+    app: web
+    version: green
+    env: lab
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+      version: green
+  template:
+    metadata:
+      labels:
+        app: web
+        version: green
+        env: lab
+    spec:
+      containers:
+        - name: web
+          image: cloudbarbosa/cloudiq:green
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+      imagePullSecrets:
+        - name: minhasecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-green-svc
+  namespace: web-lab
+  labels:
+    app: web
+    version: green
+    env: lab
+spec:
+  selector:
+    app: web
+    version: green
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
