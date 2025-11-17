@@ -3,5 +3,3 @@ https://kubernetes.github.io/ingress-nginx/
 
 Link para a documentação:
 https://kubernetes.io/docs/concepts/services-networking/ingress/#examples
-
-subdominio: http://barbosadevops.com.br/
