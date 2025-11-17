@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-blue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web-blue
+  template:
+    metadata:
+      labels:
+        app: web-blue
+    spec:
+      containers:
+        - name: web-blue
+          image: cloudbarbosa/cloudiq:blue
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: minhasecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-blue
+spec:
+  selector:
+    app: web-blue
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web-green
+  template:
+    metadata:
+      labels:
+        app: web-green
+    spec:
+      containers:
+        - name: web-green
+          image: cloudbarbosa/cloudiq:green
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: minhasecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-green
+spec:
+  selector:
+    app: web-green
+  ports:
+    - port: 80
+      targetPort: 80
